@@ -1,0 +1,29 @@
+server:
+  port: 8088
+
+
+spring:
+  application:
+#    应用的名称，可选
+    name: reggie_take_out
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/reggie?serverTimezone=UTC
+      username: root
+      password: 123456
+# redis
+  redis:
+    host: 192.168.1.203
+    port: 6379
+    password: YinHang1024..
+    database: 3
+
+mybatis:
+  #设置type搜索包的路径
+  type-aliases-package: com.fct.reggie.pojo
+  #配置mapper的扫描
+  mapper-locations: classpath:com/fct/reggie/dao/*.xml
+
+reggie:
+  path: D:\\project/javaProject/images/

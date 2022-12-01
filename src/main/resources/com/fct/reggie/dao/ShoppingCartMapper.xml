@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+namespace:名称空间
+-->
+<mapper namespace="com.fct.reggie.dao.ShoppingCartMapper">
+    <!--resultMap起别名-->
+    <resultMap id="ShoppingCartMapper" type="shoppingCart">
+        <result column="create_time" property="createTime"/>
+        <result column="user_id" property="userId"/>
+        <result column="dish_id" property="dishId"/>
+        <result column="setmeal_id" property="setmealId"/>
+        <result column="dish_flavor" property="dishFlavor"/>
+    </resultMap>
+
+    <select id="selectDishAndSetmeal" resultMap="ShoppingCartMapper">
+        SELECT * FROM shopping_cart
+        <where>
+            user_id = #{userId}
+            <if test="dishId != null ">
+                and dish_id = #{dishId}
+            </if>
+            <if test="setmealId != null ">
+                and setmeal_id = #{setmealId}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateNumber" >
+        UPDATE shopping_cart
+        <set>
+            <if test="number != null ">
+                number = #{number}+1
+            </if>
+        </set>
+        <where>
+            user_id = #{userId}
+            <if test="dishId != null ">
+                and dish_id = #{dishId}
+            </if>
+            <if test="setmealId != null">
+                and setmeal_id = #{setmealId}
+            </if>
+        </where>
+    </update>
+
+    <update id="update" >
+        UPDATE shopping_cart
+        SET
+                number = 0
+        <where>
+            user_id = #{userId}
+            <if test="dishId != null ">
+                and dish_id = #{dishId}
+            </if>
+            <if test="setmealId != null">
+                and setmeal_id = #{setmealId}
+            </if>
+        </where>
+    </update>
+
+    <update id="updateNumberSub" >
+        UPDATE shopping_cart
+        <set>
+            <if test="number != null ">
+                number = #{number}-1
+            </if>
+        </set>
+        <where>
+            user_id = #{userId}
+            <if test="dishId != null ">
+                and dish_id = #{dishId}
+            </if>
+            <if test="setmealId != null">
+                and setmeal_id = #{setmealId}
+            </if>
+        </where>
+    </update>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO shopping_cart(name,image,user_id,dish_id,setmeal_id,dish_flavor,number,amount,create_time)
+        VALUES (#{name}, #{image}, #{userId}, #{dishId}, #{setmealId}, #{dishFlavor}, #{number}, #{amount}, #{createTime});
+    </insert>
+
+    <select id="list" resultMap="ShoppingCartMapper">
+        SELECT * FROM shopping_cart
+        WHERE user_id = #{userId};
+    </select>
+
+    <delete id="deleteByUserId">
+        DELETE FROM shopping_cart
+        WHERE user_id = #{userId};
+    </delete>
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+namespace:名称空间
+-->
+<mapper namespace="com.fct.reggie.dao.OrderDetailMapper">
+    <!--resultMap起别名-->
+    <resultMap id="orderDetailMapper" type="orderDetail">
+        <result column="order_id" property="orderId"/>
+        <result column="dish_id" property="dishId"/>
+        <result column="setmeal_id" property="setmealId"/>
+        <result column="dish_flavor" property="dishFlavor"/>
+    </resultMap>
+</mapper>

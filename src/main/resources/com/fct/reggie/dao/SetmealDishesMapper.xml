@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+namespace:名称空间
+-->
+<mapper namespace="com.fct.reggie.dao.SetmealDishesMapper">
+    <!--resultMap起别名-->
+    <resultMap id="setmealDishesMapper" type="setmealDish">
+        <result column="setmeal_id"  property="setmealId"/>
+        <result column="dish_id"     property="dishId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="is_deleted"  property="isDeleted"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO setmeal_dish(setmeal_id, dish_id, name, price, copies, create_time, update_time, create_user, update_user )
+        VALUES (#{setmealId}, #{dishId}, #{name}, #{price}, #{copies}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser});
+    </insert>
+
+    <delete id="remove">
+        DELETE FROM setmeal_dish
+        WHERE setmeal_id = #{id};
+    </delete>
+</mapper>
