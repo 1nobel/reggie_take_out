@@ -10,6 +10,9 @@ import com.fct.reggie.service.CategoryService;
 import com.fct.reggie.service.SetmealService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -18,6 +21,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/setmeal")
 public class SetmealController {
+    @Autowired
+    private CacheManager cacheManager;
+
     @Autowired
     SetmealService setmealService;
 
@@ -29,6 +35,7 @@ public class SetmealController {
      * @param setmealDto 前端传入复合类型数据
      * @return
      */
+    @CacheEvict(value = "setmealCache", allEntries = true)
     @PostMapping
     public Result<String> insert(@RequestBody SetmealDto setmealDto){
         setmealService.insert(setmealDto);
@@ -64,9 +71,11 @@ public class SetmealController {
 
     /**
      * 删除套餐信息
+     * 清除分类缓存下的所有数据
      * @param ids
      * @return
      */
+    @CacheEvict(value = "setmealCache", allEntries = true)
     @DeleteMapping
     //@RequestParam把请求中的指定名称的参数传递给控制器中的形参赋值
     public Result<String> delete(@RequestParam List<Long> ids){
@@ -77,10 +86,12 @@ public class SetmealController {
 
     /**
      * 获取套餐分类信息,使用键值对，可直接使用对象来接收
+     *
      * @param categoryId
      * @param status
      * @return
      */
+    @Cacheable(value = "setmealCache", key = "#categoryId+'_'+#status")
     @GetMapping("/list")
     public Result<List<Setmeal>> list(Long categoryId, Integer status){
         List<Setmeal> setmeals = setmealService.getList(categoryId, status);
