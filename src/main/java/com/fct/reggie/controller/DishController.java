@@ -10,10 +10,13 @@ import com.fct.reggie.service.DishService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
@@ -26,6 +29,9 @@ public class DishController {
     @Autowired
     CategoryService categoryService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     /**
      * 新增菜品
      *
@@ -34,8 +40,12 @@ public class DishController {
      */
     @PostMapping
     public Result<String> dish(@RequestBody DishDto dishDto) {
+        String key = "dish_"+dishDto.getCategoryId()+"_1";
         log.info("{}", dishDto);
         dishService.insert(dishDto);
+
+        //删除指定的key
+        redisTemplate.delete(key);
         return Result.success(1, "添加成功");
 //        return null;
     }
@@ -98,7 +108,14 @@ public class DishController {
      */
     @PutMapping
     public Result<String> update(@RequestBody DishDto dishDto) {
+//        动态创建key
+        String key = "dish_"+dishDto.getCategoryId()+"_1";
+
         dishService.update(dishDto);
+        //列举出指定的keys
+        //Set key = redisTemplate.keys("dish_*");
+        //清理缓存数据
+        redisTemplate.delete(key);
         return Result.success(1, "修改菜品信息成功");
     }
 
@@ -118,8 +135,20 @@ public class DishController {
     //根据分类和状态获取菜品信息
     @GetMapping("/list")
     public Result<List> getList(Long categoryId, Integer status) {
+
+        //动态创建key
+        String key = "dish_"+categoryId+"_"+status;
+
+        List<DishDto> dishDtos = new ArrayList<>() ;
         List<Dish> dishList;
-        List<DishDto> dishDtos = new ArrayList<>();
+        //先从redis中获取缓存数据
+        dishDtos = (List<DishDto>) redisTemplate.opsForValue().get(key);
+        if(dishDtos != null){
+            //如果存在直接返回
+            return Result.success(1,dishDtos);
+        }
+        dishDtos = new ArrayList<>();
+        //如果不存在需要查询,并将其添加到redis
         if (status != null) {
             dishList = dishService.getList2(categoryId, status);
 
@@ -132,6 +161,10 @@ public class DishController {
             dishList = dishService.getList(categoryId);
             return Result.success(1, dishList);
         }
+
+        //并将其添加到redis
+        redisTemplate.opsForValue().set(key,dishDtos,60, TimeUnit.MINUTES);
+
         return Result.success(1, dishDtos);
     }
 }
