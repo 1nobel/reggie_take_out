@@ -1,14 +1,24 @@
 package com.fct.reggie.common;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
+@ApiModel("返回结果信息")
 public class Result<T> implements Serializable {
     private static final long serialVersionUID = 1L;
+    @ApiModelProperty("返回数字1成功0失败")
     private Integer code;
+
+    @ApiModelProperty("结果数据信息")
     private Object data;
+
+    @ApiModelProperty("提示信息")
     private String msg;
+
+    @ApiModelProperty("动态数据")
     private Map map = new HashMap();//动态数据
 //    正确时使用的方法
     public static<T> Result<T> success(Integer code,Object data) {

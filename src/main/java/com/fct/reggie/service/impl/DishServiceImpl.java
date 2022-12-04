@@ -1,5 +1,6 @@
 package com.fct.reggie.service.impl;
 
+import com.fct.reggie.common.CustomException;
 import com.fct.reggie.dao.DishMapper;
 import com.fct.reggie.dto.DishDto;
 import com.fct.reggie.pojo.Dish;
@@ -86,6 +87,9 @@ public class DishServiceImpl implements DishService {
     public DishDto get(Long id) {
         DishDto dishDto = new DishDto();
         Dish dish = dishMapper.get(id);
+        if(dish == null){
+            throw new CustomException("未找到相关菜品信息");
+        }
         List<DishFlavor> dishFlavors = dishFlavorService.get(id);
 
         //对象拷贝

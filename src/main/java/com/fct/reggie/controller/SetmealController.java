@@ -8,6 +8,10 @@ import com.fct.reggie.pojo.Setmeal;
 import com.fct.reggie.pojo.SetmealDish;
 import com.fct.reggie.service.CategoryService;
 import com.fct.reggie.service.SetmealService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
@@ -20,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/setmeal")
+@Api(tags = "套餐相关接口")
 public class SetmealController {
     @Autowired
     private CacheManager cacheManager;
@@ -37,6 +42,7 @@ public class SetmealController {
      */
     @CacheEvict(value = "setmealCache", allEntries = true)
     @PostMapping
+    @ApiOperation(value = "新增套餐接口")
     public Result<String> insert(@RequestBody SetmealDto setmealDto){
         setmealService.insert(setmealDto);
         return Result.success(1,"添加套餐成功");
@@ -50,6 +56,12 @@ public class SetmealController {
      * @return
      */
     @GetMapping("/page")
+    @ApiOperation(value = "套餐分页查询接口")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page",value = "页码",required = true),
+            @ApiImplicitParam(name = "pageSize",value = "每页记录数",required = true),
+            @ApiImplicitParam(name = "name",value = "套餐名称", required = false)
+    })
     public Result<Page> page(Integer page, Integer pageSize, String name){
         Page<Setmeal> page1 = setmealService.page(page, pageSize, name);
         Page<SetmealDto> page2 = new Page<>();
@@ -77,6 +89,8 @@ public class SetmealController {
      */
     @CacheEvict(value = "setmealCache", allEntries = true)
     @DeleteMapping
+    @ApiOperation(value = "删除套餐信息")
+    @ApiImplicitParam(name = "ids",value = "套餐id",required = true)
     //@RequestParam把请求中的指定名称的参数传递给控制器中的形参赋值
     public Result<String> delete(@RequestParam List<Long> ids){
         setmealService.remove(ids);
@@ -84,19 +98,7 @@ public class SetmealController {
 
     }
 
-    /**
-     * 获取套餐分类信息,使用键值对，可直接使用对象来接收
-     *
-     * @param categoryId
-     * @param status
-     * @return
-     */
-    @Cacheable(value = "setmealCache", key = "#categoryId+'_'+#status")
-    @GetMapping("/list")
-    public Result<List<Setmeal>> list(Long categoryId, Integer status){
-        List<Setmeal> setmeals = setmealService.getList(categoryId, status);
-        return Result.success(1,setmeals);
-    }
+
 
 
 }
