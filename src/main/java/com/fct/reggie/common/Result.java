@@ -10,7 +10,7 @@ public class Result<T> implements Serializable {
     private Object data;
     private String msg;
     private Map map = new HashMap();//动态数据
-//    正确时使用的方法
+//    正确时使用的方法...
     public static<T> Result<T> success(Integer code,Object data) {
         Result<T> r = new Result<T>();
         r.code = code;
