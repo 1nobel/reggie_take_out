@@ -106,7 +106,6 @@ public class EmployeeController {
     }
 
     @PutMapping
-//    @AutoFill(type = AutoFillConstant.UPDATE)
     public Result<String> update(HttpServletRequest request,@RequestBody Employee employee){
         long id = Thread.currentThread().getId();
         log.info("线程id为：{}",id);
